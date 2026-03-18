@@ -1,870 +1,567 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Painter HTML</title>
-<style>
-:root {
-  --gray: #c0c0c0;
-  --blue: #000080;
-  --light: #ffffff;
-  --dark: #808080;
-  --darker: #404040;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8">
+    <title>Painter HTML</title>
+    <style>
+        :root {
+            --win-gray: #c0c0c0;
+            --win-blue: #000080;
+            --win-border-light: #ffffff;
+            --win-border-dark: #808080;
+        }
 
-body {
-  background: #008080;
-  font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  user-select: none;
-}
+        * { box-sizing: border-box; }
 
-/* ── PENCERE ── */
-.window {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: var(--gray);
-  border: 2px solid;
-  border-color: var(--light) var(--dark) var(--dark) var(--light);
-}
+        body {
+            background-color: #008080;
+            font-family: 'Tahoma', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-.title-bar {
-  background: var(--blue);
-  color: #fff;
-  padding: 3px 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-  font-size: 13px;
-  flex-shrink: 0;
-}
-.title-bar .win-btns { display: flex; gap: 2px; }
-.win-btn {
-  width: 16px; height: 14px;
-  background: var(--gray); border: 1px solid;
-  border-color: var(--light) var(--dark) var(--dark) var(--light);
-  font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
+        .window {
+            background: var(--win-gray);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-/* ── MENÜ ÇUBUĞU ── */
-.menubar {
-  background: var(--gray);
-  border-bottom: 1px solid var(--dark);
-  padding: 2px 4px;
-  display: flex;
-  gap: 2px;
-  flex-shrink: 0;
-}
-.menu-item {
-  padding: 2px 8px;
-  font-size: 12px;
-  cursor: pointer;
-  position: relative;
-}
-.menu-item:hover { background: var(--blue); color: #fff; }
+        .title-bar {
+            background: var(--win-blue);
+            color: white;
+            padding: 4px 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
 
-/* ── ANA DÜZEN ── */
-.main-layout {
-  display: flex;
-  flex-grow: 1;
-  overflow: hidden;
-  padding: 2px;
-  gap: 2px;
-}
+        .main-layout {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+            padding: 2px;
+            gap: 2px;
+        }
 
-/* ── ARAÇ ÇUBUĞU ── */
-.toolbar {
-  width: 52px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  padding: 2px;
-  border: 2px solid;
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
-  background: var(--gray);
-  flex-shrink: 0;
-  overflow-y: auto;
-}
+        /* Sol Araç Çubuğu */
+        .toolbar {
+            width: 85px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 4px;
+            border: 2px inset white;
+            background: var(--win-gray);
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
 
-.tool-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
-  width: 100%;
-}
+        .tool {
+            width: 75px;
+            height: 55px;
+            background: var(--win-gray);
+            border: 2px outset white;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            user-select: none;
+        }
 
-.tool {
-  width: 22px; height: 22px;
-  background: var(--gray);
-  border: 1px solid;
-  border-color: var(--light) var(--dark) var(--dark) var(--light);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
-  position: relative;
-  title: attr(title);
-}
-.tool:hover { background: #d4d4d4; }
-.tool.active {
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
-  background: #b8b8b8;
-  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
-}
+        .tool span {
+            font-size: 9px;
+            pointer-events: none;
+            margin-top: 2px;
+        }
 
-.tool-separator { width: 100%; height: 6px; }
+        .tool.active {
+            border: 2px inset white;
+            background: #e0e0e0;
+        }
 
-/* Boyut seçici */
-.size-panel {
-  width: 100%;
-  border-top: 1px solid var(--dark);
-  padding: 3px 2px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.size-panel label { font-size: 8px; color: #333; }
-.size-options { display: flex; flex-direction: column; gap: 2px; align-items: center; }
-.size-opt {
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  width: 40px; height: 12px;
-}
-.size-opt span {
-  background: #000;
-  display: block;
-  width: 36px;
-  border-radius: 1px;
-}
-.size-opt.active span { background: var(--blue); }
-.size-opt:hover span { background: #444; }
+        .tool:hover:not(.active) {
+            background: #d0d0d0;
+        }
 
-/* Dolgu paneli */
-.fill-panel {
-  width: 100%;
-  border-top: 1px solid var(--dark);
-  padding: 3px 2px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.fill-panel label { font-size: 8px; color: #333; }
-.fill-options { display: flex; gap: 2px; }
-.fill-opt {
-  width: 18px; height: 18px;
-  border: 1px solid var(--dark);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
-}
-.fill-opt.active { border-color: var(--blue); border-width: 2px; }
+        /* Yazı Boyutu Ayarı */
+        .font-settings {
+            border-top: 2px solid var(--win-border-dark);
+            margin-top: 5px;
+            padding-top: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
 
-/* ── CANVAS ALANI ── */
-#canvas-wrap {
-  flex-grow: 1;
-  overflow: auto;
-  position: relative;
-  background: var(--dark);
-  border: 2px solid;
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
+        .font-settings label {
+            font-size: 10px;
+            font-weight: bold;
+        }
 
-#main-canvas {
-  display: block;
-  background: #fff;
-  cursor: crosshair;
-  /* Gölge canvas üstünde tutmak için */
-  position: relative;
-  z-index: 1;
-}
+        #font-size-input {
+            width: 60px;
+            font-family: 'Tahoma', sans-serif;
+        }
 
-/* ── SAĞ PANEL ── */
-.sidebar {
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  border: 2px solid;
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
-  flex-shrink: 0;
-}
-.sidebar-title {
-  background: var(--blue);
-  color: #fff;
-  padding: 3px 6px;
-  font-size: 11px;
-  text-align: center;
-  flex-shrink: 0;
-}
-#code-output {
-  flex-grow: 1;
-  background: #1e1e1e;
-  color: #9cdcfe;
-  padding: 8px;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 11px;
-  overflow: auto;
-  white-space: pre;
-  border: none;
-}
-/* Syntax renkleri */
-#code-output .tag   { color: #569cd6; }
-#code-output .attr  { color: #9cdcfe; }
-#code-output .val   { color: #ce9178; }
+        /* Çizim Alanı */
+        #canvas-container {
+            flex-grow: 1;
+            background: white;
+            border: 3px inset var(--win-border-dark);
+            position: relative;
+            overflow: auto;
+            background-image: radial-gradient(#ccc 1px, transparent 1px);
+            background-size: 20px 20px;
+            /* DÜZELTME 12: cursor göstergesi */
+            cursor: crosshair;
+        }
 
-.sidebar-btn {
-  padding: 6px;
-  background: var(--gray);
-  border: 2px solid;
-  border-color: var(--light) var(--dark) var(--dark) var(--light);
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 11px;
-  font-family: 'Tahoma', sans-serif;
-  flex-shrink: 0;
-}
-.sidebar-btn:active {
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
-}
+        /* DÜZELTME 5: Line tipi için border'ı kaldırıyoruz, tip bazlı style */
+        .drawn {
+            position: absolute;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+        }
 
-/* ── ALT RENK PALETİ ── */
-.statusbar {
-  height: 48px;
-  background: var(--gray);
-  border-top: 2px solid;
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0 6px;
-  flex-shrink: 0;
-}
+        .drawn.type-box {
+            border: 1px solid #000;
+        }
 
-.color-preview-box {
-  position: relative;
-  width: 38px;
-  height: 34px;
-  flex-shrink: 0;
-  margin-right: 8px;
-}
-.color-bg, .color-fg {
-  position: absolute;
-  width: 26px; height: 26px;
-  border: 2px solid;
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
-}
-.color-bg { bottom: 0; right: 0; background: #fff; }
-.color-fg { top: 0; left: 0; background: #000; z-index: 1; cursor: pointer; }
-.color-fg:hover { opacity: 0.85; }
+        .drawn.type-line {
+            border: none;
+        }
 
-.palette-grid {
-  display: grid;
-  grid-template-columns: repeat(20, 20px);
-  gap: 2px;
-}
-.pal-color {
-  width: 20px; height: 20px;
-  border: 1px solid var(--dark);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-.pal-color:hover { transform: scale(1.2); z-index: 1; position: relative; }
+        .drawn.type-text {
+            border: 1px dashed #ccc;
+            background: transparent !important;
+        }
 
-.status-info {
-  margin-left: auto;
-  font-size: 11px;
-  color: #333;
-  min-width: 120px;
-  text-align: right;
-}
+        .text-input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            font-family: sans-serif;
+            resize: none;
+            outline: none;
+            padding: 2px;
+            margin: 0;
+            display: block;
+            overflow: hidden;
+        }
 
-/* Punto input */
-.font-size-wrap {
-  border-top: 1px solid var(--dark);
-  padding: 3px 2px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  width: 100%;
-}
-.font-size-wrap label { font-size: 8px; }
-.font-size-wrap input { width: 42px; font-size: 11px; border: 1px inset; padding: 1px; }
-</style>
+        /* Sağ Panel - Kod Çıktısı */
+        .sidebar {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            border-left: 2px solid var(--win-border-dark);
+            flex-shrink: 0;
+        }
+
+        #code-output {
+            flex-grow: 1;
+            background: #1e1e1e;
+            color: #75beff;
+            padding: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            overflow: auto;
+            white-space: pre;
+            border: 2px inset #000;
+        }
+
+        /* Alt Renk Paleti */
+        .color-bar {
+            height: 45px;
+            background: var(--win-gray);
+            display: flex;
+            align-items: center;
+            padding-left: 95px;
+            gap: 4px;
+            border-top: 2px solid var(--win-border-dark);
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+        }
+
+        .color-box {
+            width: 22px;
+            height: 22px;
+            border: 2px inset white;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .color-box:hover {
+            transform: scale(1.15);
+            z-index: 1;
+        }
+
+        .current-color-display {
+            width: 32px;
+            height: 32px;
+            border: 2px inset white;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        /* Önizleme elementi */
+        #preview-element {
+            position: absolute;
+            box-sizing: border-box;
+            pointer-events: none;
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
 <div class="window">
-
-  <!-- BAŞLIK -->
-  <div class="title-bar">
-    <span>🎨 Painter HTML</span>
-    <div class="win-btns">
-      <div class="win-btn">_</div>
-      <div class="win-btn">□</div>
-      <div class="win-btn" style="color:red; font-weight:bold;">✕</div>
+    <div class="title-bar">
+        <span>Painter HTML</span>
+        <span>[ _ □ X ]</span>
     </div>
-  </div>
 
-  <!-- MENÜ -->
-  <div class="menubar">
-    <div class="menu-item" onclick="clearCanvas()">Dosya</div>
-    <div class="menu-item">Düzen</div>
-    <div class="menu-item">Görünüm</div>
-    <div class="menu-item" onclick="saveAsImage()">💾 Görüntü Kaydet</div>
-  </div>
+    <div class="main-layout">
+        <div class="toolbar">
+            <div class="tool active" id="box-tool" onclick="setTool('box')">⬜<span>Kutu</span></div>
+            <div class="tool" id="line-tool" onclick="setTool('line')">➖<span>Çizgi</span></div>
+            <div class="tool" id="text-tool" onclick="setTool('text')">A<span>Yazı</span></div>
 
-  <div class="main-layout">
+            <div class="font-settings">
+                <label>Punto</label>
+                <!-- DÜZELTME 10: parseInt ile okunacak -->
+                <input type="number" id="font-size-input" value="16" min="8" max="100" onchange="updateFontSize()">
+            </div>
 
-    <!-- ARAÇ ÇUBUĞU -->
-    <div class="toolbar">
-      <div class="tool-grid">
-        <div class="tool active" id="pencil-tool"   title="Kalem (P)"   onclick="setTool('pencil')">✏️</div>
-        <div class="tool"        id="brush-tool"    title="Fırça (B)"   onclick="setTool('brush')">🖌️</div>
-        <div class="tool"        id="eraser-tool"   title="Silgi (E)"   onclick="setTool('eraser')">🧹</div>
-        <div class="tool"        id="fill-tool"     title="Boya Doldur (F)" onclick="setTool('fill')">🪣</div>
-        <div class="tool"        id="line-tool"     title="Çizgi (L)"   onclick="setTool('line')">╱</div>
-        <div class="tool"        id="rect-tool"     title="Dikdörtgen (R)" onclick="setTool('rect')">▭</div>
-        <div class="tool"        id="circle-tool"   title="Elips (C)"   onclick="setTool('circle')">⭕</div>
-        <div class="tool"        id="text-tool"     title="Yazı (T)"    onclick="setTool('text')">A</div>
-        <div class="tool"        id="eyedrop-tool"  title="Renk Al (I)" onclick="setTool('eyedrop')">💉</div>
-        <div class="tool"        id="select-tool"   title="Seç (S)"     onclick="setTool('select')">⬚</div>
-      </div>
-
-      <!-- Çizgi kalınlığı -->
-      <div class="size-panel">
-        <label>KALINLIK</label>
-        <div class="size-options" id="size-options">
-          <div class="size-opt active" data-size="1" onclick="setSize(1)"><span style="height:1px"></span></div>
-          <div class="size-opt"        data-size="3" onclick="setSize(3)"><span style="height:3px"></span></div>
-          <div class="size-opt"        data-size="5" onclick="setSize(5)"><span style="height:5px"></span></div>
-          <div class="size-opt"        data-size="8" onclick="setSize(8)"><span style="height:8px"></span></div>
+            <hr style="width:100%; margin: 4px 0;">
+            <div class="tool" id="undo-tool" onclick="undo()">↩️<span>Geri Al</span></div>
+            <div class="tool" id="redo-tool" onclick="redo()">↪️<span>Yinele</span></div>
+            <div class="tool" onclick="clearCanvas()" style="color:red; margin-top:auto;">🗑️<span>Sıfırla</span></div>
         </div>
-      </div>
 
-      <!-- Dolgu -->
-      <div class="fill-panel">
-        <label>DOLGU</label>
-        <div class="fill-options">
-          <div class="fill-opt active" id="fill-none" title="Yok" onclick="setFillMode('none')">□</div>
-          <div class="fill-opt" id="fill-color" title="Renkli" onclick="setFillMode('color')">■</div>
-          <div class="fill-opt" id="fill-white" title="Beyaz" onclick="setFillMode('white')">▣</div>
+        <div id="canvas-container">
+            <!-- DÜZELTME 4 & Önizleme: Çizim sırasında önizleme elemanı -->
+            <div id="preview-element"></div>
         </div>
-      </div>
 
-      <!-- Yazı boyutu -->
-      <div class="font-size-wrap">
-        <label>PUNTO</label>
-        <input type="number" id="font-size-input" value="16" min="8" max="72" onchange="updateFontSize()">
-      </div>
-
+        <div class="sidebar">
+            <div style="background:var(--win-blue); color:white; padding:4px; font-size:12px; text-align:center;">CANLI HTML/CSS KODU</div>
+            <div id="code-output"></div>
+            <button onclick="copyCode()" style="padding:10px; background:var(--win-gray); border:2px outset white; cursor:pointer; font-weight:bold; font-family:'Tahoma',sans-serif;">📋 KODU KOPYALA</button>
+        </div>
     </div>
 
-    <!-- CANVAS -->
-    <div id="canvas-wrap">
-      <canvas id="main-canvas" width="1200" height="900"></canvas>
+    <div class="color-bar" id="palette">
+        <div class="current-color-display" id="active-color-show" style="background: #000000;" title="Seçili Renk"></div>
     </div>
-
-    <!-- SAĞ PANEL -->
-    <div class="sidebar">
-      <div class="sidebar-title">📄 CANLI HTML/CSS KODU</div>
-      <div id="code-output"></div>
-      <button class="sidebar-btn" onclick="copyCode()">📋 KODU KOPYALA</button>
-      <button class="sidebar-btn" onclick="copyCode(true)" style="background:#e8f0fe;">🌐 HTML OLARAK KOPYALA</button>
-    </div>
-
-  </div>
-
-  <!-- ALT DURUM ÇUBUĞU -->
-  <div class="statusbar">
-    <div class="color-preview-box">
-      <div class="color-bg" id="bg-color-show" title="Sağ tık: arka plan rengi"></div>
-      <div class="color-fg" id="fg-color-show" title="Sol tık: ön plan rengi"></div>
-    </div>
-    <div class="palette-grid" id="palette"></div>
-    <div class="status-info" id="status-info">0, 0</div>
-  </div>
-
 </div>
 
-<!-- Gizli yazı input -->
-<input type="text" id="text-cursor-input"
-  style="position:fixed;top:-999px;left:-999px;opacity:0;pointer-events:none;">
-
 <script>
-// ════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════
-const canvas  = document.getElementById('main-canvas');
-const ctx     = canvas.getContext('2d');
+    let currentTool = 'box';
+    let currentColor = '#000000';
+    let currentFontSize = 16; // DÜZELTME 10: sayı olarak tutulacak
+    let elements = [];
+    let redoStack = [];
+    let drawing = false;
+    let startX, startY;
 
-// Undo için snapshot dizisi
-let history   = [];
-let redoStack = [];
+    const container = document.getElementById('canvas-container');
+    const codeOutput = document.getElementById('code-output');
+    const fontSizeInput = document.getElementById('font-size-input');
+    const preview = document.getElementById('preview-element');
 
-let currentTool = 'pencil';
-let fgColor  = '#000000';
-let bgColor  = '#ffffff';
-let lineSize = 1;
-let fillMode = 'none';   // 'none' | 'color' | 'white'
-let fontSize = 16;
+    // Renk paleti yükleme
+    const colors = [
+        '#000000','#808080','#c0c0c0','#ffffff',
+        '#FF0000','#800000','#FFA500','#FFFF00',
+        '#00FF00','#008000','#00FFFF','#008080',
+        '#0000FF','#000080','#FF00FF','#4b0082'
+    ];
 
-let isDrawing = false;
-let lastX = 0, lastY = 0;
-let snapX = 0, snapY = 0;   // şekil başlangıcı
+    const palette = document.getElementById('palette');
+    colors.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'color-box';
+        div.style.background = c;
+        div.title = c;
+        div.onclick = () => {
+            currentColor = c;
+            document.getElementById('active-color-show').style.background = c;
+        };
+        palette.appendChild(div);
+    });
 
-// Şekil önizleme için overlay canvas
-const overlay = document.createElement('canvas');
-overlay.width  = canvas.width;
-overlay.height = canvas.height;
-overlay.style.cssText = `position:absolute;top:0;left:0;pointer-events:none;z-index:2;`;
-document.getElementById('canvas-wrap').appendChild(overlay);
-const octx = overlay.getContext('2d');
-
-// Seçim kutusu
-let selRect = null;   // {x,y,w,h}
-
-// Text modu
-let textPos  = null;
-let textStr  = '';
-
-// ════════════════════════════════════════
-//  RENK PALETİ
-// ════════════════════════════════════════
-const PALETTE = [
-  '#000000','#808080','#800000','#808000','#008000','#008080','#000080','#800080',
-  '#c0c0c0','#ffffff','#ff0000','#ffff00','#00ff00','#00ffff','#0000ff','#ff00ff',
-  '#ff8040','#804000','#80ff00','#004040','#0080ff','#8000ff','#ff0080','#ff8080',
-  '#ffd700','#adff2f','#40e0d0','#6495ed','#da70d6','#fa8072','#f5deb3','#708090',
-  '#ff6347','#4169e1','#2e8b57','#dc143c','#1e90ff','#32cd32','#ff1493','#00ced1',
-];
-
-const paletteEl = document.getElementById('palette');
-PALETTE.forEach(c => {
-  const d = document.createElement('div');
-  d.className = 'pal-color';
-  d.style.background = c;
-  d.title = c;
-  d.addEventListener('mousedown', e => {
-    e.preventDefault();
-    if (e.button === 2) { setBgColor(c); }
-    else               { setFgColor(c); }
-  });
-  d.addEventListener('contextmenu', e => e.preventDefault());
-  paletteEl.appendChild(d);
-});
-
-function setFgColor(c) {
-  fgColor = c;
-  document.getElementById('fg-color-show').style.background = c;
-}
-function setBgColor(c) {
-  bgColor = c;
-  document.getElementById('bg-color-show').style.background = c;
-}
-document.getElementById('fg-color-show').addEventListener('dblclick', () => {
-  const inp = document.createElement('input');
-  inp.type = 'color'; inp.value = fgColor;
-  inp.oninput = () => setFgColor(inp.value);
-  inp.click();
-});
-document.getElementById('bg-color-show').addEventListener('dblclick', () => {
-  const inp = document.createElement('input');
-  inp.type = 'color'; inp.value = bgColor;
-  inp.oninput = () => setBgColor(inp.value);
-  inp.click();
-});
-
-// ════════════════════════════════════════
-//  ARAÇ & AYARLAR
-// ════════════════════════════════════════
-function setTool(t) {
-  currentTool = t;
-  document.querySelectorAll('.tool').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById(t + '-tool');
-  if (el) el.classList.add('active');
-  // cursor
-  const cursors = {
-    pencil:'crosshair', brush:'crosshair', eraser:'cell',
-    fill:'crosshair', line:'crosshair', rect:'crosshair',
-    circle:'crosshair', text:'text', eyedrop:'copy', select:'default'
-  };
-  canvas.style.cursor = cursors[t] || 'crosshair';
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  selRect = null;
-}
-
-function setSize(s) {
-  lineSize = s;
-  document.querySelectorAll('.size-opt').forEach(el => el.classList.remove('active'));
-  document.querySelector(`.size-opt[data-size="${s}"]`)?.classList.add('active');
-}
-
-function setFillMode(m) {
-  fillMode = m;
-  ['none','color','white'].forEach(k => document.getElementById('fill-'+k).classList.remove('active'));
-  document.getElementById('fill-'+m).classList.add('active');
-}
-
-function updateFontSize() {
-  fontSize = parseInt(document.getElementById('font-size-input').value, 10) || 16;
-}
-
-// ════════════════════════════════════════
-//  UNDO / REDO
-// ════════════════════════════════════════
-function saveSnapshot() {
-  history.push(canvas.toDataURL());
-  if (history.length > 50) history.shift();
-  redoStack = [];
-}
-
-function undo() {
-  if (!history.length) return;
-  redoStack.push(canvas.toDataURL());
-  const img = new Image();
-  img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); updateCode(); };
-  img.src = history.pop();
-}
-
-function redo() {
-  if (!redoStack.length) return;
-  history.push(canvas.toDataURL());
-  const img = new Image();
-  img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); updateCode(); };
-  img.src = redoStack.pop();
-}
-
-// ════════════════════════════════════════
-//  CANVAS YARDIMCILARI
-// ════════════════════════════════════════
-function getPos(e) {
-  const r = canvas.getBoundingClientRect();
-  return {
-    x: Math.round(e.clientX - r.left),
-    y: Math.round(e.clientY - r.top)
-  };
-}
-
-function ctxSetup(c, size) {
-  c.strokeStyle = fgColor;
-  c.fillStyle   = fgColor;
-  c.lineWidth   = size || lineSize;
-  c.lineCap     = 'round';
-  c.lineJoin    = 'round';
-}
-
-// ════════════════════════════════════════
-//  BOYAMA DOLDUR (flood fill)
-// ════════════════════════════════════════
-function floodFill(x, y, fillColorStr) {
-  const idata = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const data  = idata.data;
-  const W = canvas.width, H = canvas.height;
-
-  function idx(px, py) { return (py * W + px) * 4; }
-
-  const si = idx(x, y);
-  const tr = data[si], tg = data[si+1], tb = data[si+2], ta = data[si+3];
-
-  // Hedef rengi parse et
-  const tmp = document.createElement('canvas');
-  tmp.width = tmp.height = 1;
-  const tc = tmp.getContext('2d');
-  tc.fillStyle = fillColorStr;
-  tc.fillRect(0,0,1,1);
-  const fd = tc.getImageData(0,0,1,1).data;
-  const fr = fd[0], fg2 = fd[1], fb = fd[2], fa = fd[3];
-
-  if (tr === fr && tg === fg2 && tb === fb && ta === fa) return;
-
-  const stack = [[x, y]];
-  while (stack.length) {
-    const [cx, cy] = stack.pop();
-    if (cx < 0 || cx >= W || cy < 0 || cy >= H) continue;
-    const ci = idx(cx, cy);
-    if (data[ci]!==tr || data[ci+1]!==tg || data[ci+2]!==tb || data[ci+3]!==ta) continue;
-    data[ci]=fr; data[ci+1]=fg2; data[ci+2]=fb; data[ci+3]=fa;
-    stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);
-  }
-  ctx.putImageData(idata, 0, 0);
-}
-
-// ════════════════════════════════════════
-//  RENK AL (eyedropper)
-// ════════════════════════════════════════
-function pickColor(x, y) {
-  const p = ctx.getImageData(x, y, 1, 1).data;
-  const hex = '#' + [p[0],p[1],p[2]].map(v => v.toString(16).padStart(2,'0')).join('');
-  setFgColor(hex);
-}
-
-// ════════════════════════════════════════
-//  ŞEKİL ÇİZ (overlay üzerinde)
-// ════════════════════════════════════════
-function drawShape(ox, oy, cx, cy, toMain) {
-  const c    = toMain ? ctx : octx;
-  const w    = cx - ox, h = cy - oy;
-
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  ctxSetup(c);
-
-  const fillC = fillMode === 'color' ? fgColor : (fillMode === 'white' ? '#ffffff' : null);
-
-  if (currentTool === 'line') {
-    c.beginPath(); c.moveTo(ox, oy); c.lineTo(cx, cy); c.stroke();
-
-  } else if (currentTool === 'rect') {
-    if (fillC) { c.fillStyle = fillC; c.fillRect(ox, oy, w, h); }
-    c.strokeRect(ox, oy, w, h);
-
-  } else if (currentTool === 'circle') {
-    const rx = Math.abs(w)/2, ry = Math.abs(h)/2;
-    const ex = ox + w/2, ey = oy + h/2;
-    c.beginPath();
-    c.ellipse(ex, ey, rx, ry, 0, 0, Math.PI*2);
-    if (fillC) { c.fillStyle = fillC; c.fill(); }
-    c.stroke();
-  }
-}
-
-// ════════════════════════════════════════
-//  MOUSE EVENT'LERİ
-// ════════════════════════════════════════
-canvas.addEventListener('mousedown', e => {
-  const {x, y} = getPos(e);
-
-  if (currentTool === 'eyedrop') { pickColor(x,y); return; }
-  if (currentTool === 'fill') {
-    saveSnapshot();
-    floodFill(x, y, fgColor);
-    updateCode(); return;
-  }
-  if (currentTool === 'text') {
-    textPos = {x, y};
-    textStr = '';
-    renderTextCursor();
-    document.getElementById('text-cursor-input').focus();
-    return;
-  }
-
-  saveSnapshot();
-  isDrawing = true;
-  snapX = x; snapY = y;
-  lastX = x; lastY = y;
-
-  if (currentTool === 'pencil' || currentTool === 'brush' || currentTool === 'eraser') {
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctxSetup(ctx, currentTool === 'brush' ? lineSize * 4 : lineSize);
-    if (currentTool === 'eraser') ctx.strokeStyle = bgColor;
-    ctx.lineTo(x+0.1, y+0.1); // nokta için
-    ctx.stroke();
-  }
-});
-
-canvas.addEventListener('mousemove', e => {
-  const {x, y} = getPos(e);
-  document.getElementById('status-info').textContent = `${x}, ${y}`;
-
-  if (!isDrawing) return;
-
-  if (currentTool === 'pencil' || currentTool === 'brush' || currentTool === 'eraser') {
-    ctxSetup(ctx, currentTool === 'brush' ? lineSize * 4 : lineSize);
-    if (currentTool === 'eraser') ctx.strokeStyle = bgColor;
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    lastX = x; lastY = y;
-
-  } else if (['line','rect','circle'].includes(currentTool)) {
-    // Önizleme overlay'de
-    octx.clearRect(0, 0, overlay.width, overlay.height);
-    ctxSetup(octx);
-    const fillC = fillMode === 'color' ? fgColor : (fillMode === 'white' ? '#ffffff' : null);
-
-    if (currentTool === 'line') {
-      octx.beginPath(); octx.moveTo(snapX, snapY); octx.lineTo(x, y); octx.stroke();
-    } else if (currentTool === 'rect') {
-      const w = x - snapX, h = y - snapY;
-      if (fillC) { octx.fillStyle = fillC; octx.fillRect(snapX, snapY, w, h); }
-      octx.strokeRect(snapX, snapY, w, h);
-    } else if (currentTool === 'circle') {
-      const w = x - snapX, h = y - snapY;
-      const rx = Math.abs(w)/2, ry = Math.abs(h)/2;
-      octx.beginPath();
-      octx.ellipse(snapX+w/2, snapY+h/2, rx, ry, 0, 0, Math.PI*2);
-      if (fillC) { octx.fillStyle = fillC; octx.fill(); }
-      octx.stroke();
+    function setTool(t) {
+        currentTool = t;
+        document.querySelectorAll('.tool').forEach(el => el.classList.remove('active'));
+        const toolEl = document.getElementById(t + '-tool');
+        if (toolEl) toolEl.classList.add('active');
     }
 
-  } else if (currentTool === 'select') {
-    octx.clearRect(0, 0, overlay.width, overlay.height);
-    octx.strokeStyle = '#000'; octx.lineWidth = 1;
-    octx.setLineDash([4,4]);
-    octx.strokeRect(snapX, snapY, x-snapX, y-snapY);
-    octx.setLineDash([]);
-    selRect = {x: Math.min(snapX,x), y: Math.min(snapY,y), w: Math.abs(x-snapX), h: Math.abs(y-snapY)};
-  }
-});
+    // DÜZELTME 10: parseInt kullan
+    function updateFontSize() {
+        currentFontSize = parseInt(fontSizeInput.value, 10) || 16;
+        if (currentFontSize < 8) currentFontSize = 8;
+        if (currentFontSize > 100) currentFontSize = 100;
+        fontSizeInput.value = currentFontSize;
+    }
 
-document.addEventListener('mouseup', e => {
-  if (!isDrawing) return;
-  isDrawing = false;
+    function undo() {
+        if (elements.length > 0) {
+            redoStack.push(elements.pop());
+            renderCanvas();
+        }
+    }
 
-  const {x, y} = getPos(e);
+    function redo() {
+        if (redoStack.length > 0) {
+            elements.push(redoStack.pop());
+            renderCanvas();
+        }
+    }
 
-  if (['line','rect','circle'].includes(currentTool)) {
-    drawShape(snapX, snapY, x, y, true);
-    octx.clearRect(0, 0, overlay.width, overlay.height);
+    // Klavye kısayolları
+    window.onkeydown = (e) => {
+        // Textarea içindeyken ctrl+z/y'yi engelleme
+        if (e.target.tagName === 'TEXTAREA') return;
+        if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+        if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+        if (e.key === 'Delete') { /* İleride seçim silme için */ }
+    };
+
+    // DÜZELTME 11: HTML encode fonksiyonu - XSS önleme
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderCanvas() {
+        // Textarea focus/cursor kaybını önlemek için:
+        // Önce eski elemanları kaldır, preview'i koru
+        const existing = container.querySelectorAll('.drawn');
+        existing.forEach(el => el.remove());
+
+        elements.forEach((el, index) => {
+            const div = document.createElement('div');
+            div.className = 'drawn type-' + el.type;
+            div.style.left = el.l;
+            div.style.top = el.t;
+            div.style.width = el.w;
+            div.style.height = el.h;
+
+            if (el.type === 'text') {
+                div.style.backgroundColor = 'transparent';
+                div.style.color = el.c;
+                div.style.fontSize = el.fontSize + 'px';
+
+                const txt = document.createElement('textarea');
+                txt.className = 'text-input';
+                txt.value = el.text;
+                txt.style.color = el.c;
+                txt.style.fontSize = el.fontSize + 'px';
+                // DÜZELTME 3: Closure ile doğru index referansı
+                txt.oninput = (function(idx) {
+                    return function(e) {
+                        elements[idx].text = e.target.value;
+                        updateCode();
+                    };
+                })(index);
+                div.appendChild(txt);
+
+            } else if (el.type === 'line') {
+                // DÜZELTME 5: Çizgi için background kullan, border yok
+                div.style.backgroundColor = el.c;
+                div.style.height = '3px';
+
+            } else {
+                // box
+                div.style.backgroundColor = el.c;
+            }
+
+            container.appendChild(div);
+        });
+
+        updateCode();
+    }
+
+    // DÜZELTME 12: Scroll offset'i hesaba kat
+    function getRelativePos(e) {
+        const rect = container.getBoundingClientRect();
+        return {
+            x: e.clientX - rect.left + container.scrollLeft,
+            y: e.clientY - rect.top + container.scrollTop
+        };
+    }
+
+    container.onmousedown = (e) => {
+        // DÜZELTME 4: Textarea içine tıklamada çizim başlatma
+        if (e.target.tagName === 'TEXTAREA') return;
+        // Drawn elemanlarına tıklamada çizim başlatma (üst üste çizim için container'a tıklama zorunlu değil)
+        if (e.target.classList.contains('drawn')) return;
+
+        drawing = true;
+        // DÜZELTME 9: redoStack'i mousedown'da DEĞİL, mouseup'ta temizle
+        const pos = getRelativePos(e);
+        startX = pos.x;
+        startY = pos.y;
+
+        // Önizleme elemanını hazırla
+        preview.style.display = 'block';
+        preview.style.left = startX + 'px';
+        preview.style.top = startY + 'px';
+        preview.style.width = '0px';
+        preview.style.height = currentTool === 'line' ? '3px' : '0px';
+        preview.style.backgroundColor = currentTool === 'text' ? 'transparent' : currentColor;
+        preview.style.border = currentTool === 'box' ? '1px dashed #555' : (currentTool === 'text' ? '1px dashed #aaa' : 'none');
+    };
+
+    container.onmousemove = (e) => {
+        if (!drawing) return;
+        const pos = getRelativePos(e);
+        const curX = pos.x;
+        const curY = pos.y;
+
+        const w = Math.abs(curX - startX);
+        const h = Math.abs(curY - startY);
+
+        // DÜZELTME 2: Negatif yönde çizim düzeltmesi
+        const left = Math.min(curX, startX);
+        const top = Math.min(curY, startY);
+
+        preview.style.left = left + 'px';
+        preview.style.width = w + 'px';
+
+        if (currentTool === 'line') {
+            // Çizgi: dikey pozisyon sabit (startY), yükseklik sabit 3px
+            preview.style.top = startY + 'px';
+            preview.style.height = '3px';
+        } else {
+            preview.style.top = top + 'px';
+            preview.style.height = h + 'px';
+        }
+    };
+
+    // DÜZELTME 8: Document üzerinde mouseup dinle - mouse dışarı çıkarsa da yakala
+    document.onmouseup = (e) => {
+        if (!drawing) return;
+        drawing = false;
+
+        const w = parseInt(preview.style.width, 10);
+        const h = parseInt(preview.style.height, 10);
+
+        // Çok küçük elemanları eklememe (yanlışlıkla tıklama)
+        if (w < 3 && h < 3) {
+            preview.style.display = 'none';
+            return;
+        }
+
+        // DÜZELTME 9: redoStack burada temizleniyor
+        redoStack = [];
+
+        // DÜZELTME 1: Line için height doğru kaydediliyor
+        elements.push({
+            type: currentTool,
+            w: preview.style.width,
+            h: currentTool === 'line' ? '3px' : preview.style.height,
+            t: preview.style.top,
+            l: preview.style.left,
+            c: currentColor,
+            text: '',
+            fontSize: currentFontSize
+        });
+
+        preview.style.display = 'none';
+        renderCanvas();
+    };
+
+    function pxToPercent(val, total) {
+        // "123px" → yüzde string'e çevirir, toplam 0 ise px olarak bırak
+        const num = parseFloat(val);
+        if (!total || isNaN(num)) return val;
+        return (num / total * 100).toFixed(4) + '%';
+    }
+
+    function updateCode() {
+        // Canvas'ın gerçek boyutunu al (scroll dahil toplam içerik alanı)
+        const cW = container.scrollWidth;
+        const cH = container.scrollHeight;
+
+        let css = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { margin: 0; }\n  .site { position: relative; width: 100%; height: 100vh; overflow: hidden; }\n`;
+        let body = `<body>\n  <div class="site">\n`;
+
+        elements.forEach((el, i) => {
+            const name = `obj-${i}`;
+
+            // Piksel değerlerini % ye çevir
+            const left  = pxToPercent(el.l, cW);
+            const top   = pxToPercent(el.t, cH);
+            const width = pxToPercent(el.w, cW);
+            // Çizgi için yükseklik sabit 3px kalsın, diğerleri %
+            const height = el.type === 'line' ? '3px' : pxToPercent(el.h, cH);
+
+            css += `  .${name} { position: absolute; top: ${top}; left: ${left}; width: ${width}; height: ${height}; `;
+
+            if (el.type === 'text') {
+                css += `font-size: ${el.fontSize}px; color: ${el.c}; font-family: sans-serif; white-space: pre-wrap; }\n`;
+                // Boşsa kod çıktısına ekleme
+                if (!el.text.trim()) return;
+                body += `    <div class="${name}">${escapeHtml(el.text)}</div>\n`;
+            } else if (el.type === 'line') {
+                css += `background: ${el.c}; }\n`;
+                body += `    <div class="${name}"></div>\n`;
+            } else {
+                css += `background: ${el.c}; border: 1px solid #000; }\n`;
+                body += `    <div class="${name}"></div>\n`;
+            }
+        });
+
+        const fullCode = css + `</style>\n</head>\n` + body + `  </div>\n</body>\n</html>`;
+        codeOutput.textContent = fullCode;
+    }
+
+    function clearCanvas() {
+        if (confirm('Tüm çizimler silinsin mi?')) {
+            elements = [];
+            redoStack = [];
+            renderCanvas();
+        }
+    }
+
+    function copyCode() {
+        const text = codeOutput.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Kod panoya kopyalandı!');
+        }).catch(() => {
+            // Clipboard API desteklenmiyorsa fallback
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            alert('Kod kopyalandı!');
+        });
+    }
+
+    // İlk render
     updateCode();
-  } else {
-    updateCode();
-  }
-});
-
-// Sağ tık → arka plan rengiyle çiz
-canvas.addEventListener('contextmenu', e => e.preventDefault());
-
-// ════════════════════════════════════════
-//  YAZI ARACI
-// ════════════════════════════════════════
-function renderTextCursor() {
-  if (!textPos) return;
-  updateCode(); // sadece canvas'taki gerçek içeriği göster, metin ayrı katmanda
-  // Geçici yazıyı overlay'e çiz
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  octx.font = `${fontSize}px sans-serif`;
-  octx.fillStyle = fgColor;
-  octx.fillText(textStr + '|', textPos.x, textPos.y + fontSize);
-}
-
-function commitText() {
-  if (!textPos || !textStr) { textPos = null; textStr = ''; octx.clearRect(0,0,overlay.width,overlay.height); return; }
-  saveSnapshot();
-  ctx.font = `${fontSize}px sans-serif`;
-  ctx.fillStyle = fgColor;
-  ctx.fillText(textStr, textPos.x, textPos.y + fontSize);
-  textPos = null; textStr = '';
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  updateCode();
-}
-
-document.addEventListener('keydown', e => {
-  // Toolbar kısayolları (text modu değilken)
-  if (document.activeElement === document.getElementById('text-cursor-input')) {
-    if (e.key === 'Enter') { commitText(); return; }
-    if (e.key === 'Escape') { textPos=null; textStr=''; octx.clearRect(0,0,overlay.width,overlay.height); return; }
-    if (e.key === 'Backspace') { textStr = textStr.slice(0,-1); renderTextCursor(); return; }
-    if (e.key.length === 1) { textStr += e.key; renderTextCursor(); return; }
-  }
-
-  if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
-  if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
-
-  const shortcuts = {p:'pencil',b:'brush',e:'eraser',f:'fill',l:'line',r:'rect',c:'circle',t:'text',i:'eyedrop',s:'select'};
-  if (!e.ctrlKey && shortcuts[e.key.toLowerCase()]) setTool(shortcuts[e.key.toLowerCase()]);
-});
-
-// ════════════════════════════════════════
-//  KOD ÇIKTISI
-// ════════════════════════════════════════
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function updateCode() {
-  const dataUrl = canvas.toDataURL('image/png');
-  const code =
-`<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Painter HTML Çıktı</title>
-<style>
-  body { margin:0; padding:0; background:#fff; }
-  .canvas-img {
-    display:block;
-    max-width:100%;
-    height:auto;
-  }
-</style>
-</head>
-<body>
-  <img class="canvas-img"
-       src="${dataUrl.substring(0, 60)}..."
-       alt="Painter HTML çizim"
-       width="${canvas.width}"
-       height="${canvas.height}">
-  <!-- Tam veri için kopyala butonunu kullanın -->
-</body>
-</html>`;
-
-  document.getElementById('code-output').textContent = code;
-}
-
-function copyCode() {
-  const dataUrl = canvas.toDataURL('image/png');
-  const code =
-`<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Painter HTML Çıktı</title>
-<style>
-  body { margin:0; padding:0; background:#fff; }
-  img { display:block; max-width:100%; }
-</style>
-</head>
-<body>
-  <img src="${dataUrl}" width="${canvas.width}" height="${canvas.height}" alt="çizim">
-</body>
-</html>`;
-
-  navigator.clipboard.writeText(code).then(() => {
-    alert('HTML kodu kopyalandı! (Base64 görüntü içerir)');
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = code; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-    alert('Kopyalandı!');
-  });
-}
-
-function saveAsImage() {
-  const a = document.createElement('a');
-  a.download = 'painter-html-cizim.png';
-  a.href = canvas.toDataURL('image/png');
-  a.click();
-}
-
-function clearCanvas() {
-  if (!confirm('Tüm çizim silinsin mi?')) return;
-  saveSnapshot();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  updateCode();
-}
-
-// ════════════════════════════════════════
-//  BAŞLANGIÇ
-// ════════════════════════════════════════
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-updateCode();
 </script>
 </body>
 </html>
